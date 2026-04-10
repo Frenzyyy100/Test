@@ -4514,4 +4514,14 @@ const Loader = (() => {
       });
       document.querySelectorAll('.cw').forEach(cw => {
         if (!q) { cw.style.display = ''; return; }
-        const has
+        const hasVisible = [...cw.querySelectorAll('.nc')].some(c => c.style.display !== 'none');
+        cw.style.display = hasVisible ? '' : 'none';
+      });
+    });
+  }
+
+  // ── Step 8: done — dismiss loading screen
+  Loader.setP(100, 'Welcome!');
+  await Loader.dismiss();
+
+})();
