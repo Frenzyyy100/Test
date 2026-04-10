@@ -761,6 +761,19 @@
 ════════════════════════════════════════════ -->
 
 
-<script src="script.js"></script>
+<!-- Inline failsafe: runs even if script.js fails to load -->
+<script>
+(function(){
+  function forceRemoveLoader() {
+    var ls = document.getElementById('loading-screen');
+    if (ls) { ls.style.transition='none'; ls.style.opacity='0'; ls.style.pointerEvents='none'; setTimeout(function(){ ls.remove(); },50); }
+    var app = document.getElementById('screen-app');
+    if (app) { app.style.display='flex'; app.classList.add('active'); }
+  }
+  window._loaderFailsafe = setTimeout(forceRemoveLoader, 6000);
+})();
+</script>
+
+<script src="script.js" onerror="(function(){ clearTimeout(window._loaderFailsafe); var ls=document.getElementById('loading-screen'); if(ls){ls.style.transition='none';ls.remove();} var app=document.getElementById('screen-app'); if(app){app.style.display='flex';app.classList.add('active');} })()"></script>
 </body>
 </html>
