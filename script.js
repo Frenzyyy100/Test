@@ -100,9 +100,13 @@ const LS = {
 };
 
 // Hard failsafe: if init hangs for any reason, force-dismiss after 6s
+// Clears the HTML inline failsafe since script.js loaded successfully
+if (window._loaderFailsafe) clearTimeout(window._loaderFailsafe);
 setTimeout(() => {
   const ls = document.getElementById('loading-screen');
   if (ls) { ls.style.transition = 'none'; ls.remove(); }
+  const app = document.getElementById('screen-app');
+  if (app && !document.querySelector('.screen.active')) { app.style.display='flex'; app.classList.add('active'); }
 }, 6000);
 function setTheme(mode) {
   const isSystem = mode === 'system';
