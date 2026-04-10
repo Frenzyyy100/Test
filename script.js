@@ -4478,6 +4478,8 @@ const Loader = (() => {
     } else if (savedScreen === 'screen-about') {
       document.getElementById('fy2').textContent = new Date().getFullYear();
     }
+  } else {
+    showScreen('screen-app');
   }
 
   if (savedTab) {
