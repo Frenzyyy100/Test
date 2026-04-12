@@ -14,9 +14,23 @@ const heroSlides = [
     title:       'The Lantern Pact: Prologue',
     description: 'Three mismatched members of the Kaihon Light Pact navigate missions, secrets, and something far bigger moving in the shadows.',
     bg:          'linear-gradient(135deg,#2C1206 0%,#5A1A08 55%,#C44B1A 100%)',
-    readHref:    '#',
     novelId:     'lantern',
-    coverImg: 'https://i.imgur.com/iQMtLH9.png',
+    coverImg:    'https://i.imgur.com/iQMtLH9.png',
+  },
+  {
+    tag:         '🔥 New Chapter',
+    title:       'The Lantern Pact: Prologue',
+    description: 'The Lantern Pact: Prologue has dropped a new chapter. Go check it out and read the latest chapter! Stay tuned for more updates!',
+    bg:          'linear-gradient(135deg,#060D2C 0%,#0F2A5A 55%,#1A6BC4 100%)',
+    novelId:     'lantern',
+    coverImg:    'https://i.imgur.com/iQMtLH9.png',
+    bookmark:    false,
+  },
+  {
+    tag:         '🥕 Working in Progress',
+    title:       'Bunny is working!',
+    description: 'Thank you for visiting Novélore! I am trying my very best to build this website to its fullest. Build with love and carrot by Frenzyyy.',
+    bg:          'linear-gradient(135deg,#0D0620 0%,#1E0A4A 55%,#3A1A8C 100%)',
   },
 ];
 
@@ -48,6 +62,7 @@ const volumeUpdatesData = [
 
 // Chapter updates — { novelId, novelTitle, emoji, chapter, chapterTitle, time }
 const updatesData = [
+{ novelId:'lantern', novelTitle:'The Lantern Pact: Prologue', emoji:'🐰', chapter:9, chapterTitle:'Vol. 1 Ch. 9 — What We Carry',              time:'Apr 9, 2026'  },
 { novelId:'lantern', novelTitle:'The Lantern Pact: Prologue', emoji:'🐰', chapter:8, chapterTitle:'Vol. 1 Ch. 8 — Daylight',              time:'Mar 30, 2026'  },
 { novelId:'lantern', novelTitle:'The Lantern Pact: Prologue', emoji:'🐰', chapter:7, chapterTitle:'Vol. 1 Ch. 7 — A New Hand',           time:'Mar 20, 2026'  },
  { novelId:'lantern', novelTitle:'The Lantern Pact: Prologue', emoji:'🐰', chapter:6, chapterTitle:'Vol. 1 Ch. 6 — White Leopard',           time:'Feb 24, 2026'  },
@@ -60,6 +75,7 @@ const updatesData = [
 
 // Announcements — { title, body, type, date, novelId? }  type: new | event | system
 const announcementsData = [
+{ title:'🐰 Ch. 9 is Live — What We Carry',              body:'Chapter 9 of The Lantern Pact: Prologue is now available. Secrets uncovered and mutual promises.',              type:'new',   date:'April 9, 2026',   novelId:'lantern' },
 { title:'🐰 Ch. 8 is Live — Daylight',              body:'Chapter 8 of The Lantern Pact: Prologue is now available. The team takes a breather in the city — but stillness never lasts long.',              type:'new',   date:'March 30, 2026',   novelId:'lantern' },
 { title:'🐰 Ch. 7 is Live — A New Hand',        body:'Chapter 7 of The Lantern Pact: Prologue is now available. False Summer Arc continues, the duo has finally got their third teammate but in a twist.',   type:'new',   date:'March 20, 2026', novelId:'lantern' },
 { title:'🐰 Ch. 6 is Live — White Leopard',        body:'Chapter 6 of The Lantern Pact: Prologue is now available. False Summer Arc continues, the prologue villain is here.',   type:'new',   date:'February 24, 2026', novelId:'lantern' },
@@ -77,6 +93,7 @@ const announcementsData = [
 // Never reuse an id — the read-state is persisted by id, so reusing one will
 // cause the new notification to appear already-read for returning visitors.
 const notificationsData = [
+{ id:'notif-ch9',      msg:'🐰 Ch. 9 is live — "What We Carry"! They carry something both should not have noticed.',                  time:'Mar 30, 2026',   read:false },
 { id:'notif-ch8',      msg:'🐰 Ch. 8 is live — "Daylight"! The team catches their breath — but the city has other plans.',                  time:'Mar 30, 2026',   read:false },
 { id:'notif-ch7',      msg:'🐰 Ch. 7 is live — "A New Hand"! The reassignment to take the spot is here.',           time:'Mar 20, 2026',   read:false },
   { id:'notif-ch6',    msg:'🐰 Ch. 6 is live — "White Leopard"! The predator is now hunting for prey soon.',           time:'Feb 24, 2026',   read:true },
@@ -256,7 +273,6 @@ function buildSlides() {
     document.getElementById('hero-slider').innerHTML = `
       <div class="hero-slide hero-empty" style="background:linear-gradient(135deg,#2C1206 0%,#3B1A08 60%,#4A2210 100%)">
         <div class="slide-pat"></div>
-        <div class="slide-glow"></div>
         <div class="slide-body">
           <div class="slide-tag">👀 Coming Soon</div>
           <h1>No Featured Stories Yet</h1>
@@ -287,16 +303,16 @@ function buildSlides() {
     }
     return `
     <div class="hero-slide" style="background:${safeCss(s.bg)}">
-      <div class="slide-pat"></div><div class="slide-glow"></div>
-      ${slideCover}
+      <div class="slide-pat"></div>
+      ${(s.coverImg || s.novelId) ? slideCover : ''}
       <div class="slide-body">
-        <div class="slide-tag">${esc(s.tag)}</div>
-        <h1>${esc(s.title)}</h1>
-        <p>${esc(s.description)}</p>
-        <div class="slide-acts">
+        ${s.tag ? `<div class="slide-tag">${esc(s.tag)}</div>` : ''}
+        ${s.title ? `<h1>${esc(s.title)}</h1>` : ''}
+        ${s.description ? `<p>${esc(s.description)}</p>` : ''}
+        ${(s.novelId || s.readHref) ? `<div class="slide-acts">
           ${s.novelId ? `<button class="btn-pri" onclick="openNovel('${s.novelId}')">▶ Read Now</button>` : `<a class="btn-pri" href="${safeUrl(s.readHref)}" rel="noopener noreferrer">▶ Read Now</a>`}
-          ${s.novelId ? `<button class="btn-out slide-bm-btn" id="slide-bm-${s.novelId}" onclick="toggleSlideBookmark('${s.novelId}',this)">${bookmarks.some(b=>b.novelId===s.novelId)?'🔖 Saved':'🔖 Bookmark'}</button>` : ''}
-        </div>
+          ${(s.novelId && s.bookmark !== false) ? `<button class="btn-out slide-bm-btn" id="slide-bm-${s.novelId}" onclick="toggleSlideBookmark('${s.novelId}',this)">${bookmarks.some(b=>b.novelId===s.novelId)?'🔖 Saved':'🔖 Bookmark'}</button>` : ''}
+        </div>` : ''}
       </div>
     </div>`;
   }).join('');
@@ -874,14 +890,12 @@ function renderAll() {
     }
   });
 
-  // What's New
+  // What's New — auto-swiping slider
   const newArr = novelsNew.filter(n => n.isNew === true);
-  const carNew = document.getElementById('car-new');
-  const newList = document.getElementById('new-list');
-  if (newArr.length) {
-    carNew.classList.remove('hidden');
-    carNew.innerHTML = newArr.map(n => nCard(n, 'New')).join('');
-    newList.innerHTML = newArr.map(n=>{
+  const newTrack = document.getElementById('new-slider-track');
+  const newDots  = document.getElementById('new-slider-dots');
+  if (newArr.length && newTrack) {
+    newTrack.innerHTML = newArr.map(n => {
       const init = titleInitial(n.title);
       const bg   = safeCss(n.bg||'linear-gradient(160deg,#E8622A,#3B1A08)');
       let lcInner;
@@ -895,23 +909,36 @@ function renderAll() {
       } else {
         lcInner = `<div class="lc-initial">${esc(init)}</div>`;
       }
-      const lcClick = n.novelId ? ` onclick="openNovel('${n.novelId}')" style="cursor:pointer"` : '';
-      return `<div class="lc"${lcClick}>
+      const lcClick = n.novelId ? ` onclick="openNovel('${n.novelId}')"` : '';
+      return `<div class="new-slide"><div class="lc"${lcClick}>
         <div class="lc-cov" style="background:${bg}">${lcInner}</div>
         <div class="lc-bd">
           <div class="lc-t">${esc(n.title)}</div>
           <div class="lc-d">${esc(n.description||'')}</div>
           <div class="tags"><span class="tag o">${esc(n.genre||'')}</span><span class="tag">${esc(n.status||'')}</span></div>
-        </div></div>`;
+        </div></div></div>`;
     }).join('');
-  } else {
-    carNew.classList.add('hidden');
-    const skNewId = 'sk-car-new';
-    newList.insertAdjacentHTML('beforebegin', `<div id="${skNewId}">${skeletonCards(3)}</div>`);
-    setTimeout(() => {
-      document.getElementById(skNewId)?.remove();
-      newList.innerHTML = emptySection('🆕', "Nothing new just yet — the creator's workshop is still running. Fresh titles incoming soon! 🏗️");
-    }, 700 + Math.random() * 400);
+    // Dots
+    if (newDots) {
+      newDots.innerHTML = newArr.map((_,i) => `<button class="new-slider-dot${i===0?' active':''}" onclick="_goNewSlide(${i})"></button>`).join('');
+    }
+    // Auto-slide
+    let _newIdx = 0, _newTimer = null;
+    window._goNewSlide = function(idx) {
+      _newIdx = ((idx % newArr.length) + newArr.length) % newArr.length;
+      newTrack.style.transform = `translateX(-${_newIdx * 100}%)`;
+      document.querySelectorAll('.new-slider-dot').forEach((d,i) => d.classList.toggle('active', i===_newIdx));
+    };
+    _newTimer = setInterval(() => window._goNewSlide(_newIdx + 1), 5000);
+    // Swipe support
+    let _newTx = 0;
+    newTrack.addEventListener('touchstart', e => { _newTx = e.touches[0].clientX; }, {passive:true});
+    newTrack.addEventListener('touchend', e => {
+      const dx = e.changedTouches[0].clientX - _newTx;
+      if (Math.abs(dx) > 40) { clearInterval(_newTimer); window._goNewSlide(_newIdx + (dx < 0 ? 1 : -1)); _newTimer = setInterval(() => window._goNewSlide(_newIdx + 1), 5000); }
+    }, {passive:true});
+  } else if (newTrack) {
+    newTrack.innerHTML = `<div class="new-slide">${emptySection('🆕', "Nothing new just yet — the creator's workshop is still running. Fresh titles incoming soon! 🏗️")}</div>`;
   }
 
   // Book Updates
@@ -3996,6 +4023,456 @@ But somewhere behind the calm exterior, she almost smiled again.
 
 Almost.`
          },
+         {
+         number: 9,
+         title: 'What We Carry',
+         date: 'Apr 9, 2026',
+          content: `The car was already waiting when they came out of the side street.
+
+
+A black sedan, engine idling, driver standing at the rear door with his hands folded in front of him. The afternoon had softened slightly — the sun dropping a few degrees, the city noise settling into its later rhythm. People were heading home now, or toward dinner, or wherever the end of a Tuesday took them.
+
+
+The VIP walked toward the car with the same composure she'd pulled together in the alley — quick, deliberate, like she'd decided somewhere between the rope and the road that she wasn't going to let the afternoon define her. Her suit was scuffed at the knee. She hadn't mentioned it once.
+
+
+She stopped in front of the three of them before getting in.
+
+
+"I want to thank you," she said. Her voice was steady, unhurried. The kind of person who meant what she said and didn't feel the need to decorate it. "All three of you. I understand this is your duty — but duty and doing it well aren't the same thing, and you did it well."
+
+
+Takeshi bowed slightly. "We're glad you're safe. That's what matters."
+
+
+"It is," she agreed. Then, with something that wasn't quite a smile but was close: "Your colleague chased a moving vehicle."
+
+
+"He does that," Takeshi said.
+
+
+She looked toward Sean.
+
+
+Sean was standing a few feet apart from the other two, slightly turned away, two fingers resting at the corner of his eye just beneath his shades. Not pressing. Just touching. Like confirming something quietly, privately, in a way he thought nobody was clocking.
+
+
+"Thank you," she said toward him.
+
+
+Sean dropped his hand.
+
+
+"Didn't really break a sweat," he said, still not fully turning. "You were fine."
+
+
+She looked at him for a moment — the particular look of someone who understood they weren't getting more than that — and nodded once. The kind of nod that carried more than it showed. Then she got in.
+
+
+The driver closed the door. The sedan pulled out of the car park and merged into the street and was gone.
+
+
+Takeshi let out a slow breath and rolled his shoulder, already running through the post-mission inventory in his head — wards to retrieve, a report to file, the blown-out ward three to account for, the section of alley wall he was trying very hard not to think about.
+
+
+"I'll start pulling the wards," he said. "Ward six needs a manual check — it was still flickering when I last read it."
+
+
+"I'll come," Olivia said.
+
+
+"You don't have to—"
+
+
+"I want to understand the ward placement. For next time."
+
+
+Takeshi looked at her, then nodded. He turned to Sean. "Sean, we're—"
+
+
+"I need to pee," Sean said.
+
+
+A pause.
+
+
+"…What?"
+
+
+"Bathroom." He was already walking, one hand raised lazily behind him in a vague gesture of farewell. "Public one's around the corner. Go do your ward thing. I'll catch up."
+
+
+Takeshi watched him go.
+
+
+Then he looked at Olivia with the expression of someone deciding how much energy to spend on a thought.
+
+
+"He's fine," he said. Mostly to himself.
+
+
+Olivia watched Sean's back as he rounded the corner — the hand that had drifted back up to his face the moment the sedan was out of sight. Quick. Casual. Like brushing something off his shoulder.
+
+
+"Mm," she said.
+
+
+"Olivia—"
+
+
+"Ward four. I'll meet you there."
+
+
+She was already walking before Takeshi could finish the question.
+
+
+---
+
+
+The public restroom around the corner was empty at this hour.
+
+
+One long mirror above a row of sinks, a fluorescent light buzzing faintly overhead. A window near the ceiling let in a thin strip of late afternoon. The floor was damp from earlier use. It smelled like hand soap and tile cleaner, which was the best you could reasonably hope for.
+
+
+Sean stood at the middle sink with the tap running.
+
+
+He had one hand braced against the basin, the other cupped under the water. He brought it up and pressed it against his face, held it there for a second — cold, grounding — then straightened up and looked at the mirror.
+
+
+His eyes were dim.
+
+
+The crescent shape of his irises — usually sharp and cleanly lit from somewhere behind them — had gone soft at the edges. The purple was low, muted, pulsing once faintly before settling back into something quieter than usual. He pressed two fingers to the outer corner of his left eye.
+
+
+Dull ache. Specific. The kind that had been building since the alley and wasn't finished yet.
+
+
+He stared at himself in the mirror for a moment.
+
+
+Then clicked his tongue, turned the tap off, and stood there in the quiet with the expression he didn't use around other people — not quite a frown, not quite anything. Just honest. The face underneath the shades when nobody was watching.
+
+
+"You're in the men's room."
+
+
+His eyes moved in the mirror.
+
+
+Olivia stood at the entrance, one shoulder against the doorframe, arms folded. She wasn't looking around the space with any particular concern. She'd assessed it the moment she walked in and moved on from that assessment.
+
+
+Sean turned around slowly.
+
+
+"Mm," he said, looking at her. "Bold."
+
+
+"The women's room is on the other side of the building."
+
+
+"And yet here you are." He leaned back against the sink, crossing his arms. "Did you follow me?"
+
+
+"I walked in the same direction as you."
+
+
+"That's following me."
+
+
+"That's a matter of interpretation."
+
+
+Sean tilted his head, a faint grin pulling at the corner of his mouth. "You know, most people would at least knock."
+
+
+"You would've said you were fine through the door." She pushed off the doorframe and walked in like the sign on it was a suggestion. "So I skipped the middle part."
+
+
+She looked at him.
+
+
+"How are your eyes?"
+
+
+"Perfect," he said immediately.
+
+
+"You had your hand on them twice in the last ten minutes."
+
+
+"I had something in them."
+
+
+"Twice."
+
+
+"It was persistent."
+
+
+Olivia looked at him with the particular patience of someone who had already decided they weren't leaving without an actual answer and was entirely comfortable waiting as long as it took.
+
+
+Sean held the expression for a moment.
+
+
+Then he shrugged — loose, easy, the full performance of someone who genuinely could not see what the issue was.
+
+
+"Daytime," he said. "Sun drains the moon energy. When I push the eyes past what the daylight allows, they ache for a bit after. Not a big deal."
+
+
+"How long is a bit?"
+
+
+"Couple hours. Maybe more today." He waved a hand. "Sorts itself out. Always does."
+
+
+"And the second moon attempts?"
+
+
+He looked at her.
+
+
+"What about them?"
+
+
+"Three callouts. Two dispersed. The third one took out a wall." She said it the same way she might read a mission report — factual, no editorializing. "That's not nothing on the reserve."
+
+
+"I had it under control."
+
+
+"Sean."
+
+
+"I had it under control," he said again, same tone, same easy certainty behind it. Unbothered. Final. The kind of line he'd drawn so long ago it had become part of the landscape. "I caught the van. I took down two guys. The wall's the city's problem. Everything worked out."
+
+
+"The wall—"
+
+
+"Everything worked out," he said pleasantly.
+
+
+She looked at him.
+
+
+He looked back, perfectly comfortable.
+
+
+She let it go — not because she agreed, but because she recognized a wall when she saw one, and had the sense not to throw things at it.
+
+
+A beat passed.
+
+
+Sean stayed leaning against the sink, half-lidded, unbothered, the picture of someone who had nothing to add.
+
+
+Then his eyes moved across her.
+
+
+Not casually. The other way — the way he actually looked at things when something didn't quite fit the room it was standing in. Slow. Reading. Past the surface of her, past the measured exterior and the even voice, landing somewhere underneath all of it.
+
+
+There it was.
+
+
+He'd noticed it the first day and filed it without comment because it wasn't his business and he hadn't been curious enough to make it his business. A presence sitting around her like a second layer of weather — not threatening, not loud, just wrong in a quiet, persistent way that had nothing to do with her and everything to do with something underneath her. Heavy. Layered. The kind of thing that didn't come from training.
+
+
+Something that wasn't hers.
+
+
+"Alright," he said, "while we're here."
+
+
+"While we're here, what?"
+
+
+"What is that thing around you?"
+
+
+Olivia's expression didn't change. But something behind it did — barely, briefly.
+
+
+"What thing?" she said.
+
+
+"The presence." He kept his voice light. Conversational. Almost bored, the way he talked about most things that were actually interesting to him. "I read aura. Always have. Everyone's got one — baseline energy, background noise, I ignore it." He tilted his head. "Yours has something sitting underneath it. Heavy. Layered. Can't see the shape of it. But I can feel the weight from here. Been there since day one."
+
+
+A silence passed through the room.
+
+
+Not long. But the kind that changes the air.
+
+
+Olivia looked at the floor for a moment — just briefly, just a second — then back up.
+
+
+"You can actually see it," she said. Not a question. More like confirming something she hadn't quite let herself expect.
+
+
+"The presence. Not the thing itself." Another shrug. "But yeah. Clearly."
+
+
+She was quiet.
+
+
+Then — something shifted. Small. The kind of thing you'd miss if you weren't paying attention. Her shoulders dropped just slightly, not in defeat but in the particular way of someone who'd been holding a door shut a long time and had quietly decided to take their hand off the handle.
+
+
+"It's a curse," she said.
+
+
+Sean's face didn't move. He just waited.
+
+
+"Attained. Not inherited, not trained into. It's been there a long time." She said it clean and flat, the way you describe a scar you've had long enough to stop thinking about every day. "It doesn't control me. I function. I've always functioned." A brief pause. "It just — exists. It's always there."
+
+
+"Does it hurt?" Sean asked.
+
+
+"Not the way your eyes hurt." She paused. "Different kind of thing."
+
+
+"What kind?"
+
+
+She looked at him.
+
+
+"The kind you learn to carry," she said. "And mostly stop noticing."
+
+
+Sean was quiet for a moment.
+
+
+"Hm," he said.
+
+
+That was it. Just — hm. Like she'd told him something mildly interesting about a street he'd never been to.
+
+
+Olivia blinked once. Just once. She'd clearly been braced for something more to land.
+
+
+"How many people know?" he asked.
+
+
+"Almost no one."
+
+
+"Why?"
+
+
+"Because people hear the word curse and stop thinking clearly." She held his gaze, steady. "Especially where I stand. I've spent a long time making sure the work speaks before anything else does. I'd like to keep it that way."
+
+
+Sean nodded slowly.
+
+
+Then: "Okay."
+
+
+Olivia paused. "Okay?"
+
+
+"Yeah." He pushed off from the sink and stretched his arms above his head, easy and unhurried, like they'd just finished talking about the weather. "I'm not going to go around telling people. What would I even say — hey, the boss has a curse, pass it on? Boring. Not interested."
+
+
+Olivia looked at him.
+
+
+"That's it?" she said.
+
+
+"What were you expecting?"
+
+
+"More," she said. "Something."
+
+
+"Like what?"
+
+
+"Questions. Concern. A reaction."
+
+
+Sean lowered his arms and looked at her with a mild, genuinely puzzled expression.
+
+
+"You've been carrying it this long," he said. "You're clearly fine. It's not eating you alive. Why would I make it into a thing?"
+
+
+Something moved across her face — brief, unguarded, gone almost as fast as it appeared. The particular expression of someone who had prepared for a harder landing and found the ground unexpectedly level.
+
+
+"Right," she said.
+
+
+"Besides." He tilted his shades down slightly — just enough, letting her see his eyes. Dim. Aching. Still stubbornly lit underneath. "You're not going to say anything about this either. Or the wall. So we're even on all counts."
+
+
+"I wasn't planning to."
+
+
+"Good." He pushed the shades back up. "Then we never had this conversation."
+
+
+Olivia held his gaze for a moment.
+
+
+Then she extended her hand.
+
+
+Sean looked at it. Looked at her. Then reached out and shook it once — firm, brief, done — and let go.
+
+
+"Not a word," he said.
+
+
+"Not a word," she agreed.
+
+
+She turned and walked toward the exit. At the door she paused, not looking back.
+
+
+"Get some water before you regroup," she said. "Your eyes will recover faster."
+
+
+"I know how my own eyes work."
+
+
+"I know you do."
+
+
+She walked out.
+
+
+Sean stood in the empty bathroom.
+
+
+He turned back to the mirror. Looked at his reflection — shades slightly crooked from where he'd tilted them, crescent glow still dim, the ache sitting dull and constant behind his eyes.
+
+
+He turned the tap on. Cupped his hands. Drank.
+
+
+Straightened up. Adjusted his shades until they sat right. Looked at himself once more — expression the same easy, unbothered neutral it always was, the face that gave nothing away and asked nothing back.
+
+
+Then he walked out into the afternoon like nothing had happened at all.
+
+
+Because as far as he was concerned, nothing had.`
+          },
         ]
       }
     ]
@@ -4529,5 +5006,4 @@ const Loader = (() => {
   // ── Step 8: done — dismiss loading screen
   Loader.setP(100, 'Welcome!');
   await Loader.dismiss();
-
 })();
