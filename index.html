@@ -180,8 +180,10 @@
         <!-- ════ WHAT'S NEW TAB ════ -->
         <div class="tab-panel" id="panel-new">
           <div class="sec-hdr" style="margin-top:22px;"><h2 class="sec-ttl">✨ What's <span>New</span></h2></div>
-          <div class="cw"><div class="carousel" id="car-new"></div></div>
-          <div id="new-list"></div>
+          <div class="new-slider-wrap">
+            <div class="new-slider-track" id="new-slider-track"></div>
+            <div class="new-slider-dots" id="new-slider-dots"></div>
+          </div>
         </div>
 
         <!-- ════ UPDATES TAB ════ -->
@@ -478,7 +480,18 @@
     <div class="page-body">
 
       <div class="ab-sec">
-        <h2>v0.6.9 <span>— Current</span></h2>
+        <h2>v0.7.0 <span>— Current</span></h2>
+        <div class="changelog-version-meta">🗓 April 2026 · Beta</div>
+        <div class="changelog-list">
+          <div class="changelog-item tweak">⚙️ Project files separated into HTML, CSS, and JavaScript for better performance</div>
+          <div class="changelog-item fix">🐛 Fixed loading screen getting stuck on startup</div>
+          <div class="changelog-item fix">🐛 Fixed page refresh on novel or chapter screen showing empty content or "Novel not found"</div>
+          <div class="changelog-item fix">🐛 Fixed Read Now button on hero slides being unresponsive on mobile</div>
+        </div>
+      </div>
+
+      <div class="ab-sec">
+        <h2>v0.6.9 <span>— Previous</span></h2>
         <div class="changelog-version-meta">🗓 April 2026 · Beta</div>
         <div class="changelog-list">
           <div class="changelog-item new">✨ Reader Preferences panel — tap "Aa" in the chapter nav to adjust settings mid-read</div>
