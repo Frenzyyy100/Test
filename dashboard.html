@@ -1,0 +1,845 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NestIQ — Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;0,700;1,600&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --ink:      #0d1b2a;
+      --ink-soft: #132336;
+      --panel:    #111e2d;
+      --gold:     #c9a84c;
+      --gold-lt:  #e8c87a;
+      --teal:     #1a6b72;
+      --teal-lt:  #229aa5;
+      --sand:     #f5f0e8;
+      --white:    #ffffff;
+      --muted:    #5a7080;
+      --border:   rgba(255,255,255,0.07);
+      --radius:   10px;
+      --green:    #22c55e;
+      --red:      #f87171;
+      --yellow:   #fbbf24;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--ink); color: var(--white);
+      display: grid; grid-template-columns: 240px 1fr;
+      min-height: 100vh; overflow-x: hidden;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      padding: 1.5rem 0; position: sticky; top: 0; height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      display: flex; align-items: center; gap: 0.6rem;
+      padding: 0 1.2rem 1.5rem; border-bottom: 1px solid var(--border);
+      text-decoration: none;
+    }
+    .logo-mark {
+      width: 32px; height: 32px; background: var(--gold);
+      border-radius: 7px; display: grid; place-items: center;
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.1rem; font-weight: 700; color: var(--ink);
+    }
+    .logo-text {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.35rem; font-weight: 700; color: var(--white);
+    }
+
+    .sidebar-section { padding: 1.2rem 0 0.5rem; }
+    .sidebar-section-label {
+      font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); padding: 0 1.2rem 0.5rem; font-weight: 500;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 0.7rem;
+      padding: 0.6rem 1.2rem; font-size: 0.88rem; font-weight: 400;
+      color: rgba(255,255,255,0.55); cursor: pointer; border: none;
+      background: none; width: 100%; text-align: left;
+      border-left: 2px solid transparent; transition: all 0.15s;
+      text-decoration: none;
+    }
+    .nav-item:hover { color: var(--white); background: rgba(255,255,255,0.04); }
+    .nav-item.active {
+      color: var(--gold); background: rgba(201,168,76,0.08);
+      border-left-color: var(--gold); font-weight: 500;
+    }
+    .nav-item .icon { font-size: 1rem; width: 20px; text-align: center; }
+    .nav-badge {
+      margin-left: auto; background: var(--gold); color: var(--ink);
+      font-size: 0.65rem; font-weight: 600; padding: 0.15rem 0.45rem;
+      border-radius: 8px;
+    }
+
+    .sidebar-footer {
+      margin-top: auto; padding: 1rem 1.2rem;
+      border-top: 1px solid var(--border);
+    }
+    .hotel-info { display: flex; align-items: center; gap: 0.7rem; }
+    .hotel-avatar {
+      width: 36px; height: 36px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--teal), var(--teal-lt));
+      display: grid; place-items: center; font-size: 1rem; flex-shrink: 0;
+    }
+    .hotel-name { font-size: 0.82rem; font-weight: 500; }
+    .hotel-plan { font-size: 0.72rem; color: var(--muted); }
+
+    /* ── MAIN ── */
+    .main { display: flex; flex-direction: column; overflow-x: hidden; }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem; border-bottom: 1px solid var(--border);
+      background: var(--panel); position: sticky; top: 0; z-index: 10;
+    }
+
+    .topbar-title { font-size: 1rem; font-weight: 500; }
+    .topbar-date { font-size: 0.8rem; color: var(--muted); }
+
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+
+    .notif-btn {
+      position: relative; background: rgba(255,255,255,0.05);
+      border: 1px solid var(--border); border-radius: 8px;
+      width: 36px; height: 36px; display: grid; place-items: center;
+      cursor: pointer; font-size: 1rem; transition: background 0.2s;
+    }
+    .notif-btn:hover { background: rgba(255,255,255,0.1); }
+    .notif-dot {
+      position: absolute; top: 6px; right: 6px;
+      width: 7px; height: 7px; border-radius: 50%; background: var(--gold);
+    }
+
+    .avatar-btn {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--teal), var(--gold));
+      display: grid; place-items: center; font-size: 0.85rem;
+      font-weight: 600; cursor: pointer; border: none; color: var(--white);
+    }
+
+    .content { padding: 2rem; flex: 1; }
+
+    /* KPI CARDS */
+    .kpi-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 1rem; margin-bottom: 2rem; }
+    .kpi-card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.2rem 1.4rem;
+      position: relative; overflow: hidden; transition: transform 0.2s;
+    }
+    .kpi-card:hover { transform: translateY(-2px); }
+    .kpi-card::after {
+      content: ''; position: absolute;
+      top: 0; left: 0; right: 0; height: 2px;
+    }
+    .kpi-card:nth-child(1)::after { background: var(--teal); }
+    .kpi-card:nth-child(2)::after { background: var(--gold); }
+    .kpi-card:nth-child(3)::after { background: var(--green); }
+    .kpi-card:nth-child(4)::after { background: #818cf8; }
+
+    .kpi-label { font-size: 0.72rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .kpi-val {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2rem; font-weight: 700; line-height: 1;
+    }
+    .kpi-sub { font-size: 0.75rem; color: var(--muted); margin-top: 0.3rem; }
+    .kpi-trend {
+      display: inline-flex; align-items: center; gap: 0.25rem;
+      font-size: 0.72rem; font-weight: 500;
+    }
+    .kpi-trend.up { color: var(--green); }
+    .kpi-trend.down { color: var(--red); }
+
+    /* GRID LAYOUT */
+    .dashboard-grid { display: grid; grid-template-columns: 1fr 340px; gap: 1.5rem; }
+
+    /* ROOM MAP */
+    .card {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: var(--radius); overflow: hidden;
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.4rem; border-bottom: 1px solid var(--border);
+    }
+    .card-title { font-size: 0.82rem; font-weight: 500; letter-spacing: 0.05em; }
+    .card-action {
+      font-size: 0.75rem; color: var(--gold); cursor: pointer;
+      background: none; border: none; font-family: 'Outfit', sans-serif;
+    }
+    .card-body { padding: 1.4rem; }
+
+    .legend { display: flex; gap: 1.2rem; flex-wrap: wrap; margin-bottom: 1rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.4rem; font-size: 0.72rem; color: var(--muted); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+
+    .room-floor { margin-bottom: 1rem; }
+    .floor-label { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.5rem; }
+    .floor-rooms { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+    .room-tile {
+      width: 52px; height: 44px; border-radius: 7px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0.1rem; cursor: pointer; transition: transform 0.15s, box-shadow 0.15s;
+      border: 1.5px solid transparent;
+    }
+    .room-tile:hover { transform: scale(1.08); box-shadow: 0 4px 16px rgba(0,0,0,0.4); }
+    .room-tile.occupied  { background: rgba(26,107,114,0.35); border-color: rgba(34,154,165,0.4); }
+    .room-tile.vacant    { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.08); }
+    .room-tile.dirty     { background: rgba(251,191,36,0.15); border-color: rgba(251,191,36,0.35); }
+    .room-tile.checkout  { background: rgba(248,113,113,0.15); border-color: rgba(248,113,113,0.3); }
+    .room-tile.maintenance { background: rgba(129,140,248,0.15); border-color: rgba(129,140,248,0.3); }
+
+    .room-tile .r-num { font-size: 0.7rem; font-weight: 600; }
+    .room-tile.occupied .r-num  { color: #a0e4e9; }
+    .room-tile.vacant .r-num    { color: var(--muted); }
+    .room-tile.dirty .r-num     { color: var(--yellow); }
+    .room-tile.checkout .r-num  { color: var(--red); }
+    .room-tile.maintenance .r-num { color: #a5b4fc; }
+    .room-tile .r-icon { font-size: 0.7rem; }
+
+    /* REQUESTS */
+    .req-list { display: flex; flex-direction: column; gap: 0; }
+    .req-row {
+      display: flex; align-items: center; gap: 0.9rem;
+      padding: 0.9rem 1.4rem; border-bottom: 1px solid var(--border);
+      transition: background 0.15s; cursor: pointer;
+    }
+    .req-row:last-child { border-bottom: none; }
+    .req-row:hover { background: rgba(255,255,255,0.03); }
+
+    .req-icon-wrap {
+      width: 34px; height: 34px; border-radius: 8px;
+      display: grid; place-items: center; font-size: 1rem; flex-shrink: 0;
+    }
+    .req-icon-wrap.bell     { background: rgba(201,168,76,0.15); }
+    .req-icon-wrap.tool     { background: rgba(129,140,248,0.15); }
+    .req-icon-wrap.food     { background: rgba(34,197,94,0.1); }
+    .req-icon-wrap.clean    { background: rgba(34,154,165,0.15); }
+
+    .req-info { flex: 1; }
+    .req-info .r-title { font-size: 0.82rem; font-weight: 500; }
+    .req-info .r-meta  { font-size: 0.72rem; color: var(--muted); margin-top: 0.1rem; }
+
+    .status-pill {
+      font-size: 0.65rem; font-weight: 500; padding: 0.2rem 0.55rem;
+      border-radius: 100px; white-space: nowrap;
+    }
+    .status-pill.new      { background: rgba(201,168,76,0.2); color: var(--gold-lt); }
+    .status-pill.progress { background: rgba(129,140,248,0.2); color: #c7d2fe; }
+    .status-pill.done     { background: rgba(34,197,94,0.15); color: #86efac; }
+
+    /* REVENUE CHART */
+    .rev-chart { display: flex; align-items: flex-end; gap: 0.5rem; height: 80px; margin-bottom: 0.8rem; }
+    .rev-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 0.3rem; }
+    .rev-bar {
+      width: 100%; border-radius: 4px 4px 0 0;
+      background: linear-gradient(180deg, var(--teal-lt), var(--teal));
+      transition: height 0.5s ease;
+    }
+    .rev-label { font-size: 0.62rem; color: var(--muted); }
+
+    /* CHECK-INS TODAY */
+    .checkin-list { display: flex; flex-direction: column; gap: 0.6rem; }
+    .checkin-row {
+      display: flex; align-items: center; gap: 0.8rem;
+      background: rgba(255,255,255,0.03); border-radius: 8px; padding: 0.7rem 0.9rem;
+    }
+    .guest-avatar {
+      width: 32px; height: 32px; border-radius: 50%;
+      display: grid; place-items: center;
+      font-size: 0.75rem; font-weight: 600; flex-shrink: 0;
+    }
+    .checkin-info { flex: 1; }
+    .checkin-info .g-name { font-size: 0.82rem; font-weight: 500; }
+    .checkin-info .g-room { font-size: 0.72rem; color: var(--muted); }
+    .checkin-time { font-size: 0.72rem; color: var(--muted); }
+
+    /* TOAST */
+    .toast-container { position: fixed; bottom: 1.5rem; right: 1.5rem; display: flex; flex-direction: column; gap: 0.6rem; z-index: 200; }
+    .toast {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 10px; padding: 0.8rem 1rem;
+      display: flex; align-items: center; gap: 0.7rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+      animation: slideIn 0.3s ease;
+      min-width: 260px;
+    }
+    .toast-icon { font-size: 1.1rem; }
+    .toast-body { flex: 1; }
+    .toast-title { font-size: 0.82rem; font-weight: 500; }
+    .toast-sub { font-size: 0.72rem; color: var(--muted); }
+    .toast-close { color: var(--muted); cursor: pointer; font-size: 1.1rem; }
+
+    @keyframes slideIn { from { opacity:0; transform: translateX(20px); } to { opacity:1; transform: translateX(0); } }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+      display: none; place-items: center; z-index: 150;
+      backdrop-filter: blur(4px);
+    }
+    .modal-overlay.open { display: grid; }
+    .modal {
+      background: var(--panel); border: 1px solid var(--border);
+      border-radius: 16px; padding: 2rem; max-width: 420px; width: 90%;
+      animation: fadeUp 0.25s ease;
+    }
+    .modal-title { font-family: 'Cormorant Garamond', serif; font-size: 1.5rem; font-weight: 700; margin-bottom: 1rem; }
+    .modal-row { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+    .modal-row:last-of-type { border-bottom: none; }
+    .modal-key { font-size: 0.8rem; color: var(--muted); }
+    .modal-val { font-size: 0.85rem; font-weight: 500; }
+    .modal-actions { display: flex; gap: 0.8rem; margin-top: 1.2rem; }
+    .btn-sm {
+      flex: 1; padding: 0.6rem 1rem; border-radius: 8px;
+      font-family: 'Outfit', sans-serif; font-size: 0.82rem;
+      font-weight: 500; cursor: pointer; border: none;
+      transition: all 0.15s; text-align: center;
+    }
+    .btn-sm-gold { background: var(--gold); color: var(--ink); }
+    .btn-sm-gold:hover { background: var(--gold-lt); }
+    .btn-sm-outline { background: transparent; color: var(--white); border: 1px solid var(--border); }
+    .btn-sm-outline:hover { border-color: var(--gold); color: var(--gold); }
+
+    @keyframes fadeUp { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+
+    /* TAB SWITCHER */
+    .tabs { display: flex; gap: 0; border-bottom: 1px solid var(--border); }
+    .tab-btn {
+      padding: 0.7rem 1.2rem; font-size: 0.82rem; font-weight: 400;
+      color: var(--muted); cursor: pointer; border: none;
+      background: none; font-family: 'Outfit', sans-serif;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: all 0.15s;
+    }
+    .tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); font-weight: 500; }
+    .tab-btn:hover:not(.active) { color: var(--white); }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* RESPONSIVE */
+    @media (max-width: 1100px) {
+      .dashboard-grid { grid-template-columns: 1fr; }
+      .kpi-grid { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 700px) {
+      body { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .kpi-grid { grid-template-columns: 1fr 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <a href="index.html" class="sidebar-logo">
+    <div class="logo-mark">N</div>
+    <span class="logo-text">NestIQ</span>
+  </a>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Main</div>
+    <a href="#" class="nav-item active" onclick="setTab(event,'overview')">
+      <span class="icon">📊</span> Overview
+    </a>
+    <a href="#" class="nav-item" onclick="setTab(event,'rooms')">
+      <span class="icon">🏨</span> Room Map
+    </a>
+    <a href="#" class="nav-item" onclick="setTab(event,'requests')">
+      <span class="icon">🛎️</span> Requests
+      <span class="nav-badge">3</span>
+    </a>
+    <a href="#" class="nav-item" onclick="setTab(event,'bookings')">
+      <span class="icon">📅</span> Bookings
+    </a>
+    <a href="#" class="nav-item" onclick="setTab(event,'housekeeping')">
+      <span class="icon">🧹</span> Housekeeping
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Finance</div>
+    <a href="#" class="nav-item" onclick="setTab(event,'revenue')">
+      <span class="icon">💰</span> Revenue
+    </a>
+    <a href="#" class="nav-item">
+      <span class="icon">💳</span> Payments
+    </a>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Settings</div>
+    <a href="#" class="nav-item"><span class="icon">👥</span> Staff</a>
+    <a href="#" class="nav-item"><span class="icon">⚙️</span> Settings</a>
+    <a href="index.html" class="nav-item"><span class="icon">🌐</span> Back to Site</a>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="hotel-info">
+      <div class="hotel-avatar">🏝️</div>
+      <div>
+        <div class="hotel-name">Palawan Breeze Inn</div>
+        <div class="hotel-plan">Growth Plan · 45 rooms</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title">Good morning, Maria 👋</div>
+      <div class="topbar-date" id="todayDate"></div>
+    </div>
+    <div class="topbar-right">
+      <div class="notif-btn" onclick="triggerToast()">🔔<span class="notif-dot"></span></div>
+      <div class="avatar-btn">MA</div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- OVERVIEW TAB -->
+    <div class="tab-content active" id="tab-overview">
+      <!-- KPIs -->
+      <div class="kpi-grid">
+        <div class="kpi-card">
+          <div class="kpi-label">Occupancy Rate</div>
+          <div class="kpi-val" style="color:var(--teal-lt);">78%</div>
+          <div class="kpi-sub"><span class="kpi-trend up">↑ 6% vs yesterday</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Revenue Today</div>
+          <div class="kpi-val" style="color:var(--gold);">₱28,400</div>
+          <div class="kpi-sub"><span class="kpi-trend up">↑ ₱3,200 vs avg</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Check-ins Today</div>
+          <div class="kpi-val" style="color:#86efac;">6</div>
+          <div class="kpi-sub">2 still pending arrival</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Open Requests</div>
+          <div class="kpi-val" style="color:#c7d2fe;">3</div>
+          <div class="kpi-sub"><span class="kpi-trend down">1 urgent</span></div>
+        </div>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- LEFT: Rooms + Revenue -->
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+          <!-- Room Status Summary -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Room Status — Floor View</span>
+              <button class="card-action" onclick="setTab(event,'rooms')">Full Map →</button>
+            </div>
+            <div class="card-body">
+              <div class="legend">
+                <div class="legend-item"><div class="legend-dot" style="background:rgba(34,154,165,0.6)"></div>Occupied</div>
+                <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.08)"></div>Vacant</div>
+                <div class="legend-item"><div class="legend-dot" style="background:rgba(251,191,36,0.3)"></div>Dirty</div>
+                <div class="legend-item"><div class="legend-dot" style="background:rgba(248,113,113,0.25)"></div>Checkout</div>
+              </div>
+              <div id="roomMapMini"></div>
+            </div>
+          </div>
+
+          <!-- Revenue chart -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Weekly Revenue</span>
+              <span style="font-size:0.75rem;color:var(--muted);">This week</span>
+            </div>
+            <div class="card-body">
+              <div class="rev-chart" id="revChart"></div>
+              <div style="display:flex;gap:0.5rem;" id="revLabels"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- RIGHT: Requests + Check-ins -->
+        <div style="display:flex;flex-direction:column;gap:1.5rem;">
+
+          <!-- Requests -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Pending Requests</span>
+              <button class="card-action" onclick="setTab(event,'requests')">See all →</button>
+            </div>
+            <div class="req-list" id="reqListMini"></div>
+          </div>
+
+          <!-- Check-ins -->
+          <div class="card">
+            <div class="card-header">
+              <span class="card-title">Today's Check-ins</span>
+            </div>
+            <div class="card-body">
+              <div class="checkin-list" id="checkinList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROOMS TAB -->
+    <div class="tab-content" id="tab-rooms">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">Full Room Map</span>
+          <div style="display:flex;gap:0.5rem;">
+            <span style="font-size:0.75rem;color:var(--muted);">45 rooms · 35 occupied</span>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="legend" style="margin-bottom:1.5rem;">
+            <div class="legend-item"><div class="legend-dot" style="background:rgba(34,154,165,0.5)"></div>Occupied</div>
+            <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.06)"></div>Vacant</div>
+            <div class="legend-item"><div class="legend-dot" style="background:rgba(251,191,36,0.2)"></div>Needs Cleaning</div>
+            <div class="legend-item"><div class="legend-dot" style="background:rgba(248,113,113,0.2)"></div>Check-out</div>
+            <div class="legend-item"><div class="legend-dot" style="background:rgba(129,140,248,0.2)"></div>Maintenance</div>
+          </div>
+          <div id="roomMapFull"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- REQUESTS TAB -->
+    <div class="tab-content" id="tab-requests">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">All Guest Requests</span>
+          <span style="font-size:0.75rem;color:var(--muted);">Tap a request to update its status</span>
+        </div>
+        <div class="req-list" id="reqListFull"></div>
+      </div>
+    </div>
+
+    <!-- BOOKINGS TAB -->
+    <div class="tab-content" id="tab-bookings">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Upcoming Bookings</span></div>
+        <div class="card-body">
+          <div id="bookingsList"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HOUSEKEEPING TAB -->
+    <div class="tab-content" id="tab-housekeeping">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Housekeeping Tasks</span></div>
+        <div class="req-list" id="hkList"></div>
+      </div>
+    </div>
+
+    <!-- REVENUE TAB -->
+    <div class="tab-content" id="tab-revenue">
+      <div class="kpi-grid" style="margin-bottom:1.5rem;">
+        <div class="kpi-card">
+          <div class="kpi-label">Monthly Revenue</div>
+          <div class="kpi-val" style="color:var(--gold);">₱742,800</div>
+          <div class="kpi-sub"><span class="kpi-trend up">↑ 12% vs last month</span></div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Avg Daily Rate</div>
+          <div class="kpi-val" style="color:var(--teal-lt);">₱2,480</div>
+          <div class="kpi-sub">Per occupied room</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">RevPAR</div>
+          <div class="kpi-val" style="color:#86efac;">₱1,934</div>
+          <div class="kpi-sub">Revenue per available room</div>
+        </div>
+        <div class="kpi-card">
+          <div class="kpi-label">Online Booking %</div>
+          <div class="kpi-val" style="color:#c7d2fe;">64%</div>
+          <div class="kpi-sub">Agoda + Booking.com</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><span class="card-title">Monthly Revenue Trend</span></div>
+        <div class="card-body">
+          <div id="monthlyChart" style="display:flex;align-items:flex-end;gap:0.5rem;height:120px;margin-bottom:0.8rem;"></div>
+          <div style="display:flex;gap:0.5rem;" id="monthlyLabels"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- ROOM MODAL -->
+<div class="modal-overlay" id="roomModal">
+  <div class="modal">
+    <div class="modal-title" id="modalTitle">Room 101</div>
+    <div id="modalRows"></div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-sm-gold" onclick="closeModal()">Mark Cleaned</button>
+      <button class="btn-sm btn-sm-outline" onclick="closeModal()">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOASTS -->
+<div class="toast-container" id="toastContainer"></div>
+
+<script>
+  // ── DATA ──
+  const rooms = [
+    { id:'101', status:'occupied',  guest:'Santos, R.',    type:'Deluxe' },
+    { id:'102', status:'occupied',  guest:'Cruz, M.',      type:'Deluxe' },
+    { id:'103', status:'checkout',  guest:'—',             type:'Standard' },
+    { id:'104', status:'occupied',  guest:'Reyes, J.',     type:'Deluxe' },
+    { id:'105', status:'dirty',     guest:'—',             type:'Standard' },
+    { id:'106', status:'vacant',    guest:'—',             type:'Standard' },
+    { id:'201', status:'occupied',  guest:'Diaz, L.',      type:'Suite' },
+    { id:'202', status:'occupied',  guest:'Mendoza, K.',   type:'Suite' },
+    { id:'203', status:'occupied',  guest:'Tan, A.',       type:'Suite' },
+    { id:'204', status:'vacant',    guest:'—',             type:'Suite' },
+    { id:'205', status:'occupied',  guest:'Garcia, P.',    type:'Suite' },
+    { id:'206', status:'dirty',     guest:'—',             type:'Suite' },
+    { id:'301', status:'maintenance',guest:'—',            type:'Family' },
+    { id:'302', status:'occupied',  guest:'Lim, C.',       type:'Family' },
+    { id:'303', status:'occupied',  guest:'Bautista, E.',  type:'Family' },
+    { id:'304', status:'vacant',    guest:'—',             type:'Family' },
+    { id:'305', status:'occupied',  guest:'Aquino, F.',    type:'Family' },
+    { id:'306', status:'occupied',  guest:'Ramos, D.',     type:'Family' },
+  ];
+
+  const requests = [
+    { icon:'🛎️', type:'bell',   title:'Extra towels',       room:'202', guest:'Mendoza, K.', time:'2 min ago',  status:'new'      },
+    { icon:'🔧', type:'tool',   title:'AC not cooling',      room:'104', guest:'Reyes, J.',   time:'18 min ago', status:'progress' },
+    { icon:'🍽️', type:'food',   title:'Room service order',  room:'305', guest:'Aquino, F.',  time:'34 min ago', status:'progress' },
+    { icon:'🧹', type:'clean',  title:'Extra pillows',       room:'201', guest:'Diaz, L.',    time:'1 hr ago',   status:'done'     },
+  ];
+
+  const checkIns = [
+    { initials:'SR', color:'#1a6b72', name:'Santos, Rey',    room:'101', time:'9:00 AM'  },
+    { initials:'CM', color:'#c9a84c', name:'Cruz, Maria',    room:'102', time:'10:30 AM' },
+    { initials:'RJ', color:'#818cf8', name:'Reyes, Jose',    room:'104', time:'1:00 PM'  },
+    { initials:'LD', color:'#22c55e', name:'Diaz, Luz',      room:'201', time:'2:00 PM'  },
+  ];
+
+  const floors = {
+    '1st Floor': rooms.filter(r=>r.id.startsWith('1')),
+    '2nd Floor': rooms.filter(r=>r.id.startsWith('2')),
+    '3rd Floor': rooms.filter(r=>r.id.startsWith('3')),
+  };
+
+  const revWeek = [
+    {day:'Mon',val:18200},{day:'Tue',val:21500},{day:'Wed',val:19800},
+    {day:'Thu',val:24100},{day:'Fri',val:29300},{day:'Sat',val:31200},{day:'Sun',val:28400}
+  ];
+  const revMonth = [
+    {m:'Jul',v:580000},{m:'Aug',v:620000},{m:'Sep',v:590000},
+    {m:'Oct',v:670000},{m:'Nov',v:700000},{m:'Dec',v:742800}
+  ];
+
+  // ── ROOM MAP ──
+  function roomMapHTML(rooms, clickable=true) {
+    const byFloor = {};
+    rooms.forEach(r => {
+      const f = r.id[0] === '1' ? '1st Floor' : r.id[0] === '2' ? '2nd Floor' : '3rd Floor';
+      (byFloor[f] = byFloor[f]||[]).push(r);
+    });
+    const icons = {occupied:'👤',vacant:'',dirty:'🧹',checkout:'🚪',maintenance:'🔧'};
+    return Object.entries(byFloor).map(([floor, rms]) => `
+      <div class="room-floor">
+        <div class="floor-label">${floor}</div>
+        <div class="floor-rooms">
+          ${rms.map(r=>`
+            <div class="room-tile ${r.status}" ${clickable?`onclick="openRoom('${r.id}')"`:''}
+                 title="${r.status}${r.guest!=='—'?' · '+r.guest:''}">
+              <span class="r-num">${r.id}</span>
+              <span class="r-icon">${icons[r.status]||''}</span>
+            </div>
+          `).join('')}
+        </div>
+      </div>`).join('');
+  }
+
+  // ── REQUEST LIST ──
+  function reqHTML(list, full=false) {
+    return list.map((r,i)=>`
+      <div class="req-row" onclick="cycleStatus(${i},${full})">
+        <div class="req-icon-wrap ${r.type}">${r.icon}</div>
+        <div class="req-info">
+          <div class="r-title">${r.title}</div>
+          <div class="r-meta">Room ${r.room} · ${r.guest} · ${r.time}</div>
+        </div>
+        <span class="status-pill ${r.status}">${r.status==='new'?'New':r.status==='progress'?'In Progress':'Done'}</span>
+      </div>`).join('');
+  }
+
+  function cycleStatus(i,full) {
+    const cycle = ['new','progress','done'];
+    const idx = cycle.indexOf(requests[i].status);
+    requests[i].status = cycle[(idx+1)%3];
+    renderRequests();
+    showToast('📋',`Request updated`, `${requests[i].title} → ${requests[i].status}`);
+  }
+
+  function renderRequests() {
+    const mini = document.getElementById('reqListMini');
+    const full = document.getElementById('reqListFull');
+    if(mini) mini.innerHTML = reqHTML(requests.slice(0,3), false);
+    if(full) full.innerHTML = reqHTML(requests, true);
+  }
+
+  // ── BAR CHART ──
+  function barChart(data, keyV, keyL, container, labelContainer, color='var(--teal-lt)') {
+    const max = Math.max(...data.map(d=>d[keyV]));
+    container.innerHTML = data.map(d=>`
+      <div class="rev-bar-wrap">
+        <div class="rev-bar" style="height:${Math.round((d[keyV]/max)*100)}%;background:${color};"></div>
+      </div>`).join('');
+    labelContainer.innerHTML = data.map(d=>`<div class="rev-label" style="flex:1;text-align:center;">${d[keyL]}</div>`).join('');
+  }
+
+  // ── MODAL ──
+  function openRoom(id) {
+    const r = rooms.find(x=>x.id===id);
+    if(!r) return;
+    const labels = {occupied:'Occupied',vacant:'Vacant',dirty:'Needs Cleaning',checkout:'Checking Out',maintenance:'Maintenance'};
+    document.getElementById('modalTitle').textContent = `Room ${r.id}`;
+    document.getElementById('modalRows').innerHTML = `
+      <div class="modal-row"><span class="modal-key">Type</span><span class="modal-val">${r.type}</span></div>
+      <div class="modal-row"><span class="modal-key">Status</span><span class="modal-val">${labels[r.status]}</span></div>
+      <div class="modal-row"><span class="modal-key">Guest</span><span class="modal-val">${r.guest}</span></div>
+    `;
+    document.getElementById('roomModal').classList.add('open');
+  }
+  function closeModal() { document.getElementById('roomModal').classList.remove('open'); }
+  document.getElementById('roomModal').addEventListener('click',e=>{ if(e.target===e.currentTarget) closeModal(); });
+
+  // ── TOAST ──
+  function showToast(icon, title, sub, dur=3000) {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.innerHTML = `<span class="toast-icon">${icon}</span><div class="toast-body"><div class="toast-title">${title}</div><div class="toast-sub">${sub}</div></div><span class="toast-close" onclick="this.parentElement.remove()">✕</span>`;
+    document.getElementById('toastContainer').appendChild(el);
+    setTimeout(()=>el.remove(), dur);
+  }
+  function triggerToast() { showToast('📩','New Guest Request','Room 214 · Extra blanket needed'); }
+
+  // ── TABS ──
+  let activeTab = 'overview';
+  function setTab(e, tab) {
+    if(e) e.preventDefault();
+    document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+    document.getElementById('tab-'+tab).classList.add('active');
+    const navItem = document.querySelector(`.nav-item[onclick*="${tab}"]`);
+    if(navItem) navItem.classList.add('active');
+    activeTab = tab;
+  }
+
+  // ── DATE ──
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-PH',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  // ── INIT ──
+  function init() {
+    // room maps
+    document.getElementById('roomMapMini').innerHTML = roomMapHTML(rooms.slice(0,12));
+    document.getElementById('roomMapFull').innerHTML = roomMapHTML(rooms);
+
+    // requests
+    renderRequests();
+
+    // check-ins
+    document.getElementById('checkinList').innerHTML = checkIns.map(c=>`
+      <div class="checkin-row">
+        <div class="guest-avatar" style="background:${c.color}20;color:${c.color};">${c.initials}</div>
+        <div class="checkin-info">
+          <div class="g-name">${c.name}</div>
+          <div class="g-room">Room ${c.room}</div>
+        </div>
+        <div class="checkin-time">${c.time}</div>
+      </div>`).join('');
+
+    // revenue charts
+    const rc = document.getElementById('revChart');
+    const rl = document.getElementById('revLabels');
+    if(rc && rl) barChart(revWeek,'val','day',rc,rl);
+
+    const mc = document.getElementById('monthlyChart');
+    const ml = document.getElementById('monthlyLabels');
+    if(mc && ml) barChart(revMonth,'v','m',mc,ml,'linear-gradient(180deg,#c9a84c,#8b6914)');
+
+    // bookings
+    const bookings = [
+      {name:'Fernandez, Ana', room:'204', checkin:'Apr 15', checkout:'Apr 18', src:'Booking.com', guests:2},
+      {name:'Villanueva, R.',  room:'206', checkin:'Apr 15', checkout:'Apr 17', src:'Walk-in',     guests:1},
+      {name:'Ong, Patricia',  room:'301', checkin:'Apr 16', checkout:'Apr 20', src:'Agoda',        guests:3},
+      {name:'Dela Cruz, M.',  room:'304', checkin:'Apr 17', checkout:'Apr 19', src:'Walk-in',     guests:2},
+    ];
+    document.getElementById('bookingsList').innerHTML = `
+      <table style="width:100%;border-collapse:collapse;font-size:0.83rem;">
+        <thead>
+          <tr style="color:var(--muted);font-size:0.72rem;letter-spacing:0.07em;">
+            <th style="text-align:left;padding:0.5rem 0;text-transform:uppercase;font-weight:500;">Guest</th>
+            <th style="text-align:left;padding:0.5rem 0;text-transform:uppercase;font-weight:500;">Room</th>
+            <th style="text-align:left;padding:0.5rem 0;text-transform:uppercase;font-weight:500;">Check-in</th>
+            <th style="text-align:left;padding:0.5rem 0;text-transform:uppercase;font-weight:500;">Check-out</th>
+            <th style="text-align:left;padding:0.5rem 0;text-transform:uppercase;font-weight:500;">Source</th>
+            <th style="text-align:left;padding:0.5rem 0;text-transform:uppercase;font-weight:500;">Guests</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${bookings.map(b=>`<tr style="border-top:1px solid var(--border);">
+            <td style="padding:0.7rem 0;font-weight:500;">${b.name}</td>
+            <td style="padding:0.7rem 0;color:var(--gold);">${b.room}</td>
+            <td style="padding:0.7rem 0;">${b.checkin}</td>
+            <td style="padding:0.7rem 0;">${b.checkout}</td>
+            <td style="padding:0.7rem 0;color:var(--muted);font-size:0.78rem;">${b.src}</td>
+            <td style="padding:0.7rem 0;">${b.guests}</td>
+          </tr>`).join('')}
+        </tbody>
+      </table>`;
+
+    // housekeeping
+    const hkTasks = [
+      {icon:'🧹',type:'clean',title:'Deep clean',   room:'103', staff:'Luisa M.',  time:'9:00 AM',  status:'done'},
+      {icon:'🧹',type:'clean',title:'Standard clean',room:'105', staff:'Rosario B.',time:'10:00 AM', status:'progress'},
+      {icon:'🧹',type:'clean',title:'Standard clean',room:'206', staff:'Elena D.',  time:'11:00 AM', status:'new'},
+      {icon:'🔧',type:'tool', title:'Repair AC',    room:'301', staff:'Pedro S.',  time:'1:00 PM',  status:'progress'},
+    ];
+    document.getElementById('hkList').innerHTML = hkTasks.map(t=>`
+      <div class="req-row">
+        <div class="req-icon-wrap ${t.type}">${t.icon}</div>
+        <div class="req-info">
+          <div class="r-title">${t.title}</div>
+          <div class="r-meta">Room ${t.room} · Assigned to ${t.staff} · ${t.time}</div>
+        </div>
+        <span class="status-pill ${t.status}">${t.status==='new'?'Pending':t.status==='progress'?'In Progress':'Done'}</span>
+      </div>`).join('');
+
+    // auto toast after 4s
+    setTimeout(()=>showToast('📩','New Guest Request','Room 214 · Extra blanket needed'), 4000);
+  }
+
+  init();
+</script>
+</body>
+</html>
